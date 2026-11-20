@@ -34,7 +34,7 @@ API testing documentation prepared by **Aadesh Awasthi** (QA Engineer): test cas
 |---|---|
 | [API Test Cases](test-cases/API_Test_Cases.md) | 30 test cases: positive, negative, auth and end-to-end |
 | [Postman Collection](postman/Restful_Booker.postman_collection.json) | Ready-to-import collection with test scripts |
-| [API Bug Reports](bug-reports/API_Bug_Reports.md) | 6 defects found in the demo API |
+| [API Bug Reports](bug-reports/API_Bug_Reports.md) | 8 defects found in the demo API |
 | [API Testing Notes](docs/API_Testing_Notes.md) | HTTP methods, status codes and what to verify in API testing |
 
 ## How to Run the Postman Collection
