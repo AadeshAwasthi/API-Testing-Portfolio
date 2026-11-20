@@ -13,6 +13,8 @@
 | API-BUG-04 | Delete booking returns 201 Created | Minor | Medium |
 | API-BUG-05 | Delete of a booking that does not exist returns 405 | Minor | Low |
 | API-BUG-06 | Health check returns 201 Created instead of 200 OK | Minor | Low |
+| API-BUG-07 | Booking is created with a negative total price | Major | Medium |
+| API-BUG-08 | Invalid date format is accepted and saved as a wrong date | Major | Medium |
 
 ---
 
@@ -82,7 +84,7 @@ Cookie: token=<valid token>
 
 **Expected Result:** `200 OK` or `204 No Content`.  
 **Actual Result:** `201 Created` with body `Created`.  
-**Impact:** Status code is misleading; 201 means a new resource was created.
+**Impact:** Status code is misleading; 201 means a new resource was created. (The API document also mentions 201, so this is raised as a design issue.)
 
 ---
 
@@ -106,3 +108,45 @@ Cookie: token=<valid token>
 **Expected Result:** `200 OK`.  
 **Actual Result:** `201 Created` with body `Created`.  
 **Impact:** Low. A GET request does not create anything, so 201 is not the correct code. (The API document also mentions 201, so this is raised as a design issue.)
+
+---
+
+## API-BUG-07: Booking is created with a negative total price
+
+**Request**
+
+```
+POST /booking
+Content-Type: application/json
+
+{
+  "firstname": "Aadesh", "lastname": "Awasthi", "totalprice": -100, "depositpaid": true,
+  "bookingdates": { "checkin": "2026-12-01", "checkout": "2026-12-05" },
+  "additionalneeds": "Breakfast"
+}
+```
+
+**Expected Result:** `400 Bad Request`; total price cannot be negative.  
+**Actual Result:** `200 OK`; booking is created with `"totalprice": -100`.  
+**Impact:** Bookings with an invalid amount can be saved.
+
+---
+
+## API-BUG-08: Invalid date format is accepted and saved as a wrong date
+
+**Request**
+
+```
+POST /booking
+Content-Type: application/json
+
+{
+  "firstname": "Aadesh", "lastname": "Awasthi", "totalprice": 100, "depositpaid": true,
+  "bookingdates": { "checkin": "10-12-2026", "checkout": "15-12-2026" },
+  "additionalneeds": "Breakfast"
+}
+```
+
+**Expected Result:** `400 Bad Request`; dates must be in `YYYY-MM-DD` format.  
+**Actual Result:** `200 OK`; booking is created with `"checkin": "2026-10-12"` and `"checkout": "0NaN-aN-aN"`.  
+**Impact:** The check-in date is changed without any warning (10 December becomes 12 October) and the check-out date is saved as an invalid value.
